@@ -1,0 +1,117 @@
+\documentclass[11pt,letterpaper,sans]{article}   % possible options include font size ('10pt', '11pt' and '12pt'), paper size ('a4paper', 'letterpaper', 'a5paper', 'legalpaper', 'executivepaper' and 'landscape') and font family ('sans' and 'roman')
+
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2cm]{geometry}
+\usepackage{fancyheadings}
+\usepackage{listings}
+
+
+\pagestyle{fancy}
+\linespread{2}
+
+\chead{Devoir 2 - Séquentiel, C++ Threads, OpenCl}
+\cfoot{Clément Zotti 11 074 801, Ferhat Abbas 10 205 137}
+
+\begin{document}
+Nous utilisons la même fonction pour le parallèle et le séquentiel, elle prend un interval en paramètre et fait sont travail.
+
+Le programme mono-para exécute la partie parallèle en premier puis la partie série.
+\begin{itemize}
+\item C++ sequentiel, parallèle
+\begin{lstlisting}
+./mono-para aabaabb
+aabaabb, 45 4294967268 4294967267 15 19 39 18 
+Parallel : 
+Time 1.20073 s.
+Trouve aabaabb, 45 4294967268 4294967267 15 19 39 18 
+Sequentiel : 
+Time 1.11264 s.
+Trouve aabaabb, 45 4294967268 4294967267 15 19 39 18 
+Done
+\end{lstlisting}
+
+\item OpenCL
+\begin{lstlisting}
+Entrez la chaine de caractere de longueur 7
+aabaabb
+Wait while processing...
+Time 10.1712 s.
+Le mot de pass trouve est : aabaabb
+\end{lstlisting}
+
+\end{itemize}
+
+Le programme parallèle est divisé en deux threads, nous avions 4 coeurs sur la machine de test donc le plus proche diviseur de 26 en entier est 2.
+On obtient donc des résultats similaire en c++ séquentiel et parallèle pour l'interval suivant :
+aaaaaaa - nnnnnnn
+
+Car, la séparation de l'alphabet se fait comme suit:
+aaaaaaa - nnnnnnn
+nnnnnnn - zzzzzzz
+
+Donc pour tout ce qui est au dessus de nnnnnnn la partie parallèle est plus rapide d'un facteur d'environ 2 dans notre cas, sinon la partie séquentielle est plus rapide d'un facteur [1.0786, 2.7852] plus le mot de passe est proche de aaaaaaa plus la partie séuqntielle à de meilleur résultats.
+
+La partie OpenCl se calcule de la même facon mais divisé en 26 parties.
+
+\begin{itemize}
+\item C++ sequentiel, parallèle
+\begin{lstlisting}
+./mono-para aazbbbb
+nnnonnn, 45 4294967268 4294967267 15 19 39 18 
+Parallel : 
+Time 33.6309 s.
+Trouve nnnonnn, 45 4294967268 4294967267 15 19 39 18 
+Sequentiel : 
+Time 32.3821 s.
+Trouve nnnonnn, 45 4294967268 4294967267 15 19 39 18 
+Done
+\end{lstlisting}
+
+\item OpenCL
+\begin{lstlisting}
+Entrez la chaine de caractere de longueur 7
+aazbbbb
+Wait while processing...
+Time 140.748 s.
+Le mot de pass trouve est : aabaabb
+\end{lstlisting}
+\end{itemize}
+
+
+
+\begin{itemize}
+\item C++ sequentiel, parallèle
+\begin{lstlisting}
+./mono-para nnnonnn
+nnnonnn, 45 4294967268 4294967267 15 19 39 18 
+Parallel : 
+Time  s.
+Trouve nnnonnn, 45 4294967268 4294967267 15 19 39 18 
+Sequentiel : 
+Time xxx.xxxx s.
+%Trouve nnnonnn, 45 4294967268 4294967267 15 19 39 18 
+%Done
+Trop long pas eu le temps de finir
+\end{lstlisting}
+
+\item OpenCL
+\begin{lstlisting}
+Entrez la chaine de caractere de longueur 7
+nnnonnn
+Wait while processing...
+Time 3.77138 s.
+Le mot de pass trouve est : nnnonnn
+\end{lstlisting}
+\end{itemize}
+
+Il y a quelques mot de passe qui on le même hash ce qui peux causer des problèmes dans la résolution.
+\begin{itemize}
+\item qqqrrrt = aaabbbd
+\end{itemize}
+
+
+\end{document}
+
+

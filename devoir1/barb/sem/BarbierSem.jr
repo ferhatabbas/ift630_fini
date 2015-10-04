@@ -1,0 +1,83 @@
+import edu.ucdavis.jr.JR;
+
+public class BarbierSem{
+  public static final int TOUR = 4;
+  public static final int NB_SEAT = 4;
+  public static int freeSeat;
+  public static final int CUTTING = 10;
+  public static boolean unsleep = false;
+
+  // Mutual exclusion
+  public static sem seatReady = 1;
+  public static sem moving = 1;
+
+  // Conditionnal
+  public static sem clientReady = 0;
+  public static sem barberReady = 0;
+  public static sem clientExit = 0;
+  public static sem exitDoor = 0;
+  public static boolean done;
+
+  static{
+    freeSeat = NB_SEAT;
+    done = false;
+  }
+
+  static process Barbier{
+    while(true){
+      if(freeSeat == NB_SEAT){
+        System.out.println("Barber sleeping.");
+        unsleep=true;
+      }
+      P(clientReady);
+      P(seatReady);
+      if(unsleep){
+        System.out.println("Barber unsleep.");
+        unsleep=false;
+      }
+      freeSeat++;
+      V(barberReady);
+      BarbierSem.sleep(CUTTING, 0);
+      V(seatReady);
+      P(moving);
+      P(exitDoor);
+      System.out.println("Barber go to exit.");
+      V(moving);
+      P(clientExit);
+    }
+  }
+
+  static process Client((int id=0; id<10;id++)){
+    for(int i = 0; i<TOUR;i++){
+      if(i==0) BarbierSem.sleep(100, 1);
+      else BarbierSem.sleep(id, 1);
+      System.out.println("Client " +id+ " enter.");
+      if(freeSeat>0){
+        freeSeat--;
+        V(clientReady);
+        V(seatReady);
+        P(barberReady);
+        System.out.println("Client " +id+ " hair cut.");
+        BarbierSem.sleep(CUTTING, 0);
+        V(exitDoor);
+        P(moving);
+        System.out.println("Client " +id+ " go to exit.");
+        V(moving);
+        V(clientExit);
+      }else{
+        System.out.println("Drop client "+id);
+      }
+    }
+  }
+
+  static void sleep(int id, int rate){
+    try{
+      Thread.sleep(2*id);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+  }
+
+  public static void main(String args[]){
+  }
+}

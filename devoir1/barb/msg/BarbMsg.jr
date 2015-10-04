@@ -1,0 +1,61 @@
+import edu.ucdavis.jr.JR;
+
+public class BarbMsg{
+
+  private static final int TOUR=5;
+  private static final int SEAT=4;
+  private static int seatAvail=4;
+  private static boolean barberCut = false;
+
+  private static final int MAX = 15;
+  private static final int MIN = 5;
+  
+
+  public static op void client_ready();
+  public static op void seat_ready(int);
+  public static op void barber_ready();
+  public static op void cut_done();
+  public static op void goto_exit();
+
+  static process client((int id=0;id<10;id++)){
+    for(int i=0;i<TOUR;i++){
+      try{Thread.sleep((int)(Math.random()*(MAX-MIN)+MIN));}
+      catch(Exception e){e.printStackTrace();}
+      if(seatAvail>0){
+        seatAvail--;
+        System.out.println("Client "+id+" enter");
+        send client_ready();
+        System.out.println("Client "+id+" wait");
+        receive barber_ready();
+        System.out.println("Client "+id+" seat");
+        send seat_ready(id);
+        receive cut_done();
+        System.out.println("Client "+id+" exit");
+        send goto_exit();
+      }
+      else{
+        System.out.println("Client "+id+" drop");
+      }
+    }
+  }
+  
+  static process barber{
+    int id;
+    while(true){
+      if(seatAvail==SEAT){
+        System.out.println("Barber sleeping");
+        receive client_ready();
+        System.out.println("Barber unsleep");
+      }
+      send barber_ready();
+      seatAvail++;
+      receive seat_ready(id);
+      //Cutting hair
+      System.out.println("Barber cut client "+id);
+      send cut_done();
+      receive goto_exit();
+      barberCut=false;
+    }
+  }
+  public static void main(String []args){}
+}

@@ -1,0 +1,41 @@
+import edu.ucdavis.jr.JR;
+
+public class PhilosopheSem{
+
+  private static int MAX_PROC = 5;
+  private static int TOUR = 3;
+  private static boolean fork [];
+  private static cap void () mutex [] = new cap void()[MAX_PROC];
+
+  static{
+    for(int i=0;i<MAX_PROC;i++)
+      mutex[i] = new sem(1);
+  }
+  
+  static process repas((int id = 0; id<MAX_PROC; id++)){
+    for(int i=0; i<TOUR;i++){
+      int right_hand = id;
+      int left_hand = (id+1)>(MAX_PROC-1)?0:id+1;
+      if((id%2)==0){
+        int tmp = left_hand;
+        left_hand = right_hand;
+        right_hand = tmp;
+      }
+      System.out.println("Philosophe "+id+" thinking.");
+      try{
+        Thread.sleep(id*10);
+      }catch(Exception e){e.printStackTrace();}
+      P(mutex[right_hand]);
+      P(mutex[left_hand]);
+      System.out.println("Philosophe "+id+" eating.");
+      try{
+        Thread.sleep(id*100);
+      }catch(Exception e){e.printStackTrace();}
+      V(mutex[right_hand]);
+      V(mutex[left_hand]);
+    }
+  }
+
+  public static void main(String args[]){
+  }
+}

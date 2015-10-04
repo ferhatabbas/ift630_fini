@@ -1,0 +1,17 @@
+public class Parc{
+
+  public static ParcMon pm = new ParcMon("Barber Monitor");
+
+  public static void main(String [] args){}
+
+  public static process client((int id=0; id<12; id++)){
+    pm.Client(id);
+  }
+  
+  public static process Voiture{
+    while(true){
+      pm.Voiture();
+    }
+  }
+  
+}

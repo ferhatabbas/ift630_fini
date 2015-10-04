@@ -1,0 +1,64 @@
+import edu.ucdavis.jr.JR;
+
+public class ParcSem {
+	public static final int SEAT_CAR = 4;
+	public static final int NB_PERSO = 8;
+	public static final int NB_TOUR = 5;
+	public static int SEAT;
+	public static boolean Tour_DONE = false;
+
+	// Mutual exclusion
+	public static sem seatready = 1;
+	public static sem moving = 1;
+
+	// Conditionnal
+	public static sem personneReady = 0;
+	public static sem carready = 0;
+	public static sem PersonneExit = 0;
+	public static sem done_tour=0;
+	public static sem careVide = 0;
+	public static boolean done;
+
+	static{
+		SEAT = 0;
+		done = false;
+	}
+	static process Voiture{
+		while(true){
+			for(int i =0;i<SEAT_CAR;i++){
+				V(carready);
+ 			}
+			for(int i=0; i<SEAT_CAR;i++){
+				P(personneReady);
+			}
+			System.out.println("voiture est prete a partir.");
+			ParcSem.sleep(1,1);
+			for(int i=0;i<SEAT_CAR;i++) V(done_tour);
+			for(int i=0;i<SEAT_CAR;i++){
+				P(PersonneExit);
+				System.out.println("une personne est sortie");
+			}
+		}
+
+	}
+
+
+	static process Personne((int id=0; id<NB_PERSO;id++)){
+		
+			P(carready);
+			System.out.println("personne " +id+ " entre dans la voiture.");
+			V(personneReady);
+			P(done_tour);
+			V(PersonneExit);
+			
+	}
+	static void sleep(int id, int rate){
+		try{
+			Thread.sleep(2*id);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	public static void main(String args[]){
+	}
+}

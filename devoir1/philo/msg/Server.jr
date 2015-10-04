@@ -1,0 +1,33 @@
+public class Server{
+  public op void request_fork(int, cap void ());
+  public op void release_fork(int);
+
+  private boolean [] state;
+  private int nb_phil;
+
+  public Server(int nb){
+    nb_phil = nb;
+    state = new boolean[nb_phil];
+    for(int i=0;i<nb_phil;i++){
+      state[i]=false;
+    }
+  }
+
+  private boolean caneat(int id){
+    int left = ((id+nb_phil)+1)%nb_phil;
+    int right = ((id+nb_phil)-1)%nb_phil;
+    return !(state[left] || state[right]);
+  }
+
+  process server{
+    while(true){
+      inni void request_fork(int id, cap void () ret) st caneat(id){
+        state[id]=true;
+        send ret();
+      }
+      [] void release_fork(int id){
+        state[id]=false;
+      }
+    }
+  }
+}

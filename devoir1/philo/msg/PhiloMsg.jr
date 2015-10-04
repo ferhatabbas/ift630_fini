@@ -1,0 +1,33 @@
+import edu.ucdavis.jr.JR;
+
+public class PhiloMsg{
+  private static final int NB_PHIL = 5;
+  private static final int TOUR = 1;
+  
+  remote Server s;
+  int id;
+  private op void can_eat();
+
+  public PhiloMsg(int id, remote Server s){
+    this.s = s;
+    this.id = id;
+  }
+
+  process dining{
+    for(int i=0;i<TOUR;i++){
+      System.out.println("Philosophe "+id+" is waiting");
+      send s.request_fork(id, can_eat);
+      receive can_eat();
+      System.out.println("Philosophe "+id+" is eating");
+      send s.release_fork(id);
+      System.out.println("Philosophe "+id+" is thinking");
+    }
+  }
+  
+  public static void main(String[] args){
+    System.out.println("BEGIN");
+    remote Server s = new remote Server(NB_PHIL);
+    for(int i=0;i<NB_PHIL;i++)
+      new remote PhiloMsg(i, s);
+  }
+}

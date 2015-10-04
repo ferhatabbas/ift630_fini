@@ -1,0 +1,91 @@
+import edu.ucdavis.jr.JR;
+
+public class MatriceMsg{
+
+  public static final int NROWS=10;
+  public static final int NCOLS=10;
+  public static final int MAX = 15;
+  public static final int MIN = 2;
+  public static int active;
+  private static int [][] m1;
+  private static int [][] m2;
+  private static int [][] res;
+  public static op void job_done(int, int, int);
+  public static op void res_done();
+
+  static{
+    m1 = new int[NROWS][NCOLS];
+    m2 = new int[NROWS][NCOLS];
+    res = new int[NROWS][NROWS];
+    for(int i=0;i<NROWS;i++)
+      for(int j=0;j<NROWS;j++)
+        res[i][j]=0;
+
+    for(int i=0;i<NROWS;i++){
+      for(int j=0;j<NCOLS;j++){
+        m1[i][j] = (int)(Math.random()*(MAX-MIN)+MIN);
+        m2[i][j] = (int)(Math.random()*(MAX-MIN)+MIN);
+      }
+    }
+  }
+
+  public static class MatSum{
+    public op void req_sum(int[], int[], int, int);
+    
+    public void req_sum(int []r1, int[]r2, int x, int y){
+      int rres = 0;
+      // System.out.println("Begin req_sum ");
+      for(int i=0; i<r1.length;i++)
+        rres += (r1[i]*r2[i]);
+      // System.out.println("Done req_sum ");
+      send job_done(rres, x, y);
+    }
+  }
+
+  static process server{
+    MatriceMsg.MatSum m = new MatriceMsg.MatSum();
+    active = NROWS*NROWS;
+    for(int i=0;i<NROWS;i++){
+      for(int j=0;j<NROWS;j++){
+        send m.req_sum(m1[i],m2[j],i,j);
+      }
+    }
+    receive res_done();
+    System.out.println("M1: ");
+    printMat(m1);
+    System.out.println("M2: ");
+    printMat(m2);
+    System.out.println("RES: ");
+    printMat(res);
+  }
+
+  static process queue{
+    while (true){
+      inni void job_done(int rres, int x, int y){
+        active--;
+        res[x][y] = rres;
+        if(active==0){
+          send res_done();
+        }
+      }
+    }
+  }
+
+  public static void main(String [] args){
+  }
+
+  public static void printMat(int[][] mat){
+    System.out.printf("[");
+    for(int i=0;i<mat.length;i++){
+      System.out.printf("[");
+      for(int j=0;j<mat[i].length;j++){
+        System.out.printf(""+mat[i][j]+(((j+1)==mat[i].length)?"":","));
+      }
+      System.out.printf("],\n");
+    }
+    System.out.printf("]\n");
+  }
+
+    
+  
+}
